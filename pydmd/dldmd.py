@@ -17,10 +17,12 @@ class DLDMD(torch.nn.Module):
         self,
         encoder,
         decoder,
+        encoding_weight,
         reconstruction_weight,
         prediction_weight,
         phase_space_weight,
         dmd,
+        prediction_snapshots=1,
         optimizer=optim.Adam,
         optimizer_kwargs={"lr": 1.0e-3, "weight_decay": 1.0e-9},
         epochs=1000,
@@ -33,6 +35,7 @@ class DLDMD(torch.nn.Module):
         self._encoder = encoder
         self._decoder = decoder
 
+        self._encoding_weight = encoding_weight
         self._reconstruction_weight = reconstruction_weight
         self._prediction_weight = prediction_weight
         self._phase_space_weight = phase_space_weight
@@ -54,6 +57,11 @@ class DLDMD(torch.nn.Module):
         logging.info(f"DMD instance: {type(dmd)}")
         self._dmd = dmd
 
+        self._prediction_snapshots = prediction_snapshots
+        logging.info(
+            f"DMD will predict {prediction_snapshots} snapshots during training."
+        )
+
         logging.info("----- DLDMD children -----")
         logging.info(tuple(self.children()))
 
@@ -62,7 +70,11 @@ class DLDMD(torch.nn.Module):
             input = input[None]
 
         encoded_input = self._encoder(input)
-        encoded_output = self._dmd.fit(encoded_input).reconstructed_data
+        self._dmd.fit(encoded_input)
+        self._dmd.dmd_time["tend"] = (
+            self._dmd.original_time["tend"] + self._prediction_snapshots
+        )
+        encoded_output = self._dmd.reconstructed_data
 
         if not torch.is_complex(input):
             old_dtype = encoded_output.dtype
@@ -84,12 +96,24 @@ class DLDMD(torch.nn.Module):
         batched_psp = self._dmd.operator.phase_space_prediction
         psp_loss = torch.linalg.matrix_norm(batched_psp).sum()
 
-        reconstruction_loss = mse_loss(output, input)
+        if self._prediction_snapshots > 0:
+            reconstruction_loss = mse_loss(
+                output[..., : -self._prediction_snapshots, :],
+                input[..., : -self._prediction_snapshots, :],
+            )
+            prediction_loss = mse_loss(
+                output[..., -self._prediction_snapshots :, :],
+                input[..., -self._prediction_snapshots :, :],
+            )
+        else:
+            reconstruction_loss = mse_loss(output, input)
+            prediction_loss = 0
 
         return (
-            self._reconstruction_weight * decoder_loss
-            + self._prediction_weight * psp_loss
-            + self._phase_space_weight * reconstruction_loss
+            self._encoding_weight * decoder_loss
+            + self._phase_space_weight * psp_loss
+            + self._reconstruction_weight * reconstruction_loss
+            + self._prediction_weight * prediction_loss
         )
 
     def _train_step(self, loader):
