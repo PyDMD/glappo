@@ -22,7 +22,7 @@ class DLDMD(torch.nn.Module):
         prediction_weight,
         phase_space_weight,
         dmd,
-        prediction_snapshots=1,
+        n_prediction_snapshots=1,
         optimizer=optim.Adam,
         optimizer_kwargs={"lr": 1.0e-3, "weight_decay": 1.0e-9},
         epochs=1000,
@@ -57,9 +57,9 @@ class DLDMD(torch.nn.Module):
         logging.info(f"DMD instance: {type(dmd)}")
         self._dmd = dmd
 
-        self._prediction_snapshots = prediction_snapshots
+        self._n_prediction_snapshots = n_prediction_snapshots
         logging.info(
-            f"DMD will predict {prediction_snapshots} snapshots during training."
+            f"DMD will predict {n_prediction_snapshots} snapshots during training."
         )
 
         logging.info("----- DLDMD children -----")
@@ -74,7 +74,7 @@ class DLDMD(torch.nn.Module):
         logging.debug(f"Encoded input shape: {encoded_input.shape}")
         self._dmd.fit(encoded_input)
         self._dmd.dmd_time["tend"] = (
-            self._dmd.original_time["tend"] + self._prediction_snapshots
+            self._dmd.original_time["tend"] + self._n_prediction_snapshots
         )
 
         encoded_output = self._dmd.reconstructed_data.swapaxes(-1, -2)
@@ -94,24 +94,37 @@ class DLDMD(torch.nn.Module):
 
         return self._decoder(encoded_output)
 
+    def _dmd_training_snapshots(self, snapshots):
+        """Batch x Time x Space"""
+        if self._n_prediction_snapshots > 0:
+            return snapshots[..., : -self._n_prediction_snapshots, :]
+        return snapshots
+
+    def _prediction_snapshots(self, snapshots):
+        """Batch x Time x Space"""
+        if self._n_prediction_snapshots > 0:
+            return snapshots[..., -self._n_prediction_snapshots :, :]
+        return torch.zeros(0)
+
     def _compute_loss(self, output, input):
+        logging.debug(f"Input shape: {input.shape}")
+        logging.debug(f"Output shape: {output.shape}")
+
         decoder_loss = mse_loss(self._decoder(self._encoder(input)), input)
 
         batched_psp = self._dmd.operator.phase_space_prediction
+
         psp_loss = torch.linalg.matrix_norm(batched_psp).sum()
 
-        if self._prediction_snapshots > 0:
-            reconstruction_loss = mse_loss(
-                output[..., : -self._prediction_snapshots, :],
-                input[..., : -self._prediction_snapshots, :],
-            )
-            prediction_loss = mse_loss(
-                output[..., -self._prediction_snapshots :, :],
-                input[..., -self._prediction_snapshots :, :],
-            )
-        else:
-            reconstruction_loss = mse_loss(output, input)
-            prediction_loss = 0
+        reconstruction_loss = mse_loss(
+            self._dmd_training_snapshots(output),
+            self._dmd_training_snapshots(input),
+        )
+
+        prediction_loss = mse_loss(
+            self._prediction_snapshots(output),
+            self._prediction_snapshots(input),
+        )
 
         return (
             self._encoding_weight * decoder_loss
@@ -125,7 +138,7 @@ class DLDMD(torch.nn.Module):
         loss_sum = 0.0
         for i, minibatch in enumerate(loader):
             self._optimizer.zero_grad()
-            output = self(minibatch)
+            output = self(self._dmd_training_snapshots(minibatch))
             loss = self._compute_loss(output, minibatch)
             loss.backward()
             self._optimizer.step()
@@ -135,12 +148,13 @@ class DLDMD(torch.nn.Module):
 
     def _eval_step(self, loader):
         self.eval()
-        return np.mean(
-            [
-                self._compute_loss(self(minibatch), minibatch).item()
-                for minibatch in loader
-            ]
-        )
+        loss_sum = 0.0
+        for i, minibatch in enumerate(loader):
+            output = self(self._dmd_training_snapshots(minibatch))
+            loss = self._compute_loss(output, minibatch)
+
+            loss_sum += loss.item()
+        return loss_sum / (i + 1)
 
     def fit(self, X):
         """
