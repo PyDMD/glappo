@@ -1,5 +1,6 @@
 import logging
 import time
+from copy import deepcopy
 
 import numpy as np
 import torch
@@ -56,6 +57,8 @@ class DLDMD(torch.nn.Module):
 
         logging.info(f"DMD instance: {type(dmd)}")
         self._dmd = dmd
+        # a copy of dmd to be used only for evaluation
+        self._eval_dmd = deepcopy(dmd)
 
         self._n_prediction_snapshots = n_prediction_snapshots
         logging.info(
@@ -156,6 +159,16 @@ class DLDMD(torch.nn.Module):
             loss_sum += loss.item()
         return loss_sum / (i + 1)
 
+    def _save_model(self, label="dldmd"):
+        temp = self._dmd
+        self._dmd = self._eval_dmd
+        torch.save(self, label + ".pl")
+        self._dmd = temp
+
+    @staticmethod
+    def _load_model_for_eval(label="dldmd"):
+        return torch.load(label + ".pl", map_location="cpu")
+
     def fit(self, X):
         """
         Compute the Deep-Learning enhanced DMD on the input data.
@@ -179,12 +192,15 @@ class DLDMD(torch.nn.Module):
             training_time = (time.time_ns() - start_training_time) / 1_000_000
             train_loss_arr.append(train_loss)
 
-            start_eval_time = time.time_ns()
-            eval_loss = self._eval_step(test_dataloader)
-            eval_time = (time.time_ns() - start_eval_time) / 1_000_000
-            eval_loss_arr.append(eval_loss)
-
             if epoch % self._print_every == 0:
+                self._save_model(f"dldmd_e{epoch}")
+
+                eval_model = DLDMD._load_model_for_eval(f"dldmd_e{epoch}")
+                start_eval_time = time.time_ns()
+                eval_loss = eval_model._eval_step(test_dataloader)
+                eval_time = (time.time_ns() - start_eval_time) / 1_000_000
+                eval_loss_arr.append(eval_loss)
+
                 logging.info(
                     f"[{epoch}] loss: {eval_loss:.4f}, train_time: {training_time:.2f} ms, eval_time: {eval_time:.2f} ms"
                 )
