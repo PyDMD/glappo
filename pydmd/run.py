@@ -76,6 +76,12 @@ parser.add_argument(
     required=True,
     type=str,
 )
+parser.add_argument(
+    "--n_prediction_snapshots",
+    help="Number of snapshots to be predicted",
+    default=1,
+    type=int,
+)
 args = parser.parse_args()
 
 # ----------------- CLI --------------------
@@ -109,7 +115,8 @@ def allocate_dldmd(input_size):
         epochs=args.stop,
         eval_on_cpu=args.eval_on_cpu,
         label=args.label,
-        print_prediction_loss=args.print_prediction_loss
+        print_prediction_loss=args.print_prediction_loss,
+        n_prediction_snapshots=args.n_prediction_snapshots
     )
 
 
