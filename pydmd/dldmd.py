@@ -1,6 +1,7 @@
 import logging
 import time
 from copy import deepcopy
+import os
 
 import numpy as np
 import torch
@@ -192,18 +193,23 @@ class DLDMD(torch.nn.Module):
             training_time = (time.time_ns() - start_training_time) / 1_000_000
             train_loss_arr.append(train_loss)
 
+            model_label = f"dldmd_e{epoch}"
+            self._save_model(model_label)
+            eval_model = DLDMD._load_model_for_eval(model_label)
+            start_eval_time = time.time_ns()
+            eval_loss = eval_model._eval_step(test_dataloader)
+            eval_time = (time.time_ns() - start_eval_time) / 1_000_000
+            eval_loss_arr.append(eval_loss)
+
             if epoch % self._print_every == 0:
-                self._save_model(f"dldmd_e{epoch}")
-
-                eval_model = DLDMD._load_model_for_eval(f"dldmd_e{epoch}")
-                start_eval_time = time.time_ns()
-                eval_loss = eval_model._eval_step(test_dataloader)
-                eval_time = (time.time_ns() - start_eval_time) / 1_000_000
-                eval_loss_arr.append(eval_loss)
-
                 logging.info(
                     f"[{epoch}] loss: {eval_loss:.4f}, train_time: {training_time:.2f} ms, eval_time: {eval_time:.2f} ms"
                 )
+            else:
+                os.remove(model_label + ".pl")
+
+            if eval_loss < self._acceptable_loss:
+                break
 
         np.save(f"{self._label}_train_loss.npy", train_loss_arr)
         np.save(f"{self._label}_eval_loss.npy", eval_loss_arr)
