@@ -31,6 +31,7 @@ class DLDMD(torch.nn.Module):
         print_every=10,
         batch_size=256,
         label="dldmd_run",
+        eval_on_cpu=True,
     ):
         super().__init__()
 
@@ -55,6 +56,7 @@ class DLDMD(torch.nn.Module):
         self._print_every = print_every
         self._batch_size = batch_size
         self._label = label
+        self._eval_on_cpu = eval_on_cpu
 
         logging.info(f"DMD instance: {type(dmd)}")
         self._dmd = dmd
@@ -166,9 +168,13 @@ class DLDMD(torch.nn.Module):
         torch.save(self, label + ".pl")
         self._dmd = temp
 
-    @staticmethod
-    def _load_model_for_eval(label="dldmd"):
-        return torch.load(label + ".pl", map_location="cpu")
+    def _load_model_for_eval(self, label="dldmd"):
+        map_location = (
+            "cpu"
+            if self._eval_on_cpu or not torch.cuda.is_available()
+            else "cuda"
+        )
+        return torch.load(label + ".pl", map_location=map_location)
 
     def fit(self, X):
         """
@@ -195,7 +201,7 @@ class DLDMD(torch.nn.Module):
 
             model_label = f"dldmd_e{epoch}"
             self._save_model(model_label)
-            eval_model = DLDMD._load_model_for_eval(model_label)
+            eval_model = self._load_model_for_eval(model_label)
             start_eval_time = time.time_ns()
             eval_loss = eval_model._eval_step(test_dataloader)
             eval_time = (time.time_ns() - start_eval_time) / 1_000_000

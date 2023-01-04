@@ -55,6 +55,11 @@ parser.add_argument(
     type=int,
 )
 parser.add_argument(
+    "--eval_on_cpu",
+    help="If set, eval is carried out on CPU",
+    action="store_true",
+)
+parser.add_argument(
     "--stop",
     help="Number of epochs or required accuracy",
     default=1000,
@@ -91,6 +96,7 @@ def allocate_dldmd(input_size):
         dmd=dmd,
         print_every=args.printevery,
         epochs=args.stop,
+        eval_on_cpu=args.eval_on_cpu
     )
 
 
@@ -121,16 +127,25 @@ data = data_maker_fluid_flow_full(
     tf=6,
 )
 data = torch.from_numpy(data)
+data_dict = {
+    "training_data": data[: args.training],
+    "test_data": data[args.training :],
+}
 
 dldmd = allocate_dldmd(data.shape[-1])
 if torch.cuda.is_available():
     device = torch.device("cuda")
-    data = data.to(device)
+
+    data_dict["training_data"] = data_dict["training_data"].to(device)
+    if not args.eval_on_cpu:
+        data_dict["test_data"] = data_dict["test_data"].to(device)
+    else:
+        data_dict["test_data"] = data_dict["test_data"].clone()
+        del data
+
     dldmd = dldmd.to(device, dtype=data.dtype)
 else:
     dldmd = dldmd.to(dtype=data.dtype)
-dldmd.fit(
-    {"training_data": data[: args.training], "test_data": data[args.training :]}
-)
 
+dldmd.fit(data_dict)
 save(dldmd._encoder, dldmd._decoder)
