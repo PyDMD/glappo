@@ -209,7 +209,7 @@ class DLDMD(torch.nn.Module):
             training_time, train_loss = self._train_step(train_dataloader)
             train_loss_arr.append(train_loss)
 
-            model_label = f"dldmd_e{epoch}"
+            model_label = f"{self._label}_e{epoch}"
             self._save_model(model_label)
             eval_model = self._load_model_for_eval(model_label)
             eval_time, eval_loss = eval_model._eval_step(test_dataloader)

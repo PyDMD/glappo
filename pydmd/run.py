@@ -65,6 +65,12 @@ parser.add_argument(
     default=1000,
     type=float,
 )
+parser.add_argument(
+    "--label",
+    help="Label to be used for serialization",
+    required=True,
+    type=str,
+)
 args = parser.parse_args()
 
 # ----------------- CLI --------------------
@@ -96,7 +102,8 @@ def allocate_dldmd(input_size):
         dmd=dmd,
         print_every=args.printevery,
         epochs=args.stop,
-        eval_on_cpu=args.eval_on_cpu
+        eval_on_cpu=args.eval_on_cpu,
+        label=args.label
     )
 
 
