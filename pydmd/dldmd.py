@@ -2,6 +2,7 @@ import logging
 import time
 from copy import deepcopy
 import os
+from functools import wraps
 
 import numpy as np
 import torch
@@ -12,6 +13,17 @@ from torch.utils.data import DataLoader
 logging.basicConfig(
     format="[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 )
+
+
+def timer(func):
+    @wraps(func)
+    def timed_func(*args, **kwargs):
+        start = time.time_ns()
+        val = func(*args, **kwargs)
+        dt_ms = (time.time_ns() - start) / 1_000_000
+        return dt_ms, val
+
+    return timed_func
 
 
 class DLDMD(torch.nn.Module):
@@ -139,6 +151,7 @@ class DLDMD(torch.nn.Module):
             + self._prediction_weight * prediction_loss
         )
 
+    @timer
     def _train_step(self, loader):
         self.train()
         loss_sum = 0.0
@@ -148,17 +161,16 @@ class DLDMD(torch.nn.Module):
             loss = self._compute_loss(output, minibatch)
             loss.backward()
             self._optimizer.step()
-
             loss_sum += loss.item()
         return loss_sum / (i + 1)
 
+    @timer
     def _eval_step(self, loader):
         self.eval()
         loss_sum = 0.0
         for i, minibatch in enumerate(loader):
             output = self(self._dmd_training_snapshots(minibatch))
             loss = self._compute_loss(output, minibatch)
-
             loss_sum += loss.item()
         return loss_sum / (i + 1)
 
@@ -194,17 +206,13 @@ class DLDMD(torch.nn.Module):
         eval_loss_arr = []
 
         for epoch in range(1, self._epochs + 1):
-            start_training_time = time.time_ns()
-            train_loss = self._train_step(train_dataloader)
-            training_time = (time.time_ns() - start_training_time) / 1_000_000
+            training_time, train_loss = self._train_step(train_dataloader)
             train_loss_arr.append(train_loss)
 
             model_label = f"dldmd_e{epoch}"
             self._save_model(model_label)
             eval_model = self._load_model_for_eval(model_label)
-            start_eval_time = time.time_ns()
-            eval_loss = eval_model._eval_step(test_dataloader)
-            eval_time = (time.time_ns() - start_eval_time) / 1_000_000
+            eval_time, eval_loss = eval_model._eval_step(test_dataloader)
             eval_loss_arr.append(eval_loss)
 
             if epoch % self._print_every == 0:
