@@ -12,31 +12,27 @@ from data import data_maker_fluid_flow_full
 
 # ----------------- CLI --------------------
 
-parser = argparse.ArgumentParser(help="DLDMD command line interface")
+parser = argparse.ArgumentParser(description="DLDMD command line interface")
 parser.add_argument(
-    "-h",
     "--hidden",
     help="Encoder hidden layer size",
     type=int,
     default="128",
 )
 parser.add_argument(
-    "-i",
     "--immersion",
     help="Immersion size",
     type=int,
     default="5",
 )
-parser.add_argument("-s", "--svd_rank", type=float, default=-1)
+parser.add_argument("--svd_rank", type=float, default=-1)
 parser.add_argument(
-    "-p",
     "--printevery",
     help="Number of epochs to skip before printing evaluation loss",
     type=int,
     default="10",
 )
 parser.add_argument(
-    "-a",
     "--anomaly",
     help="Whether to enable or not PyTorch anomaly detection",
     type=bool,
@@ -47,14 +43,12 @@ parser.add_argument("--reconstruction_weight", type=float, default=1.0)
 parser.add_argument("--prediction_weight", type=float, default=1.0)
 parser.add_argument("--phase_space_weight", type=float, default=1.0)
 parser.add_argument(
-    "-t",
     "--training",
     help="Number of samples to be used for training",
     default=10_000,
     type=int,
 )
 parser.add_argument(
-    "-e",
     "--eval",
     help="Number of samples to be used for the evaluation",
     default=3_000,
@@ -133,6 +127,8 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
     data = data.to(device)
     dldmd = dldmd.to(device, dtype=data.dtype)
+else:
+    dldmd = dldmd.to(dtype=data.dtype)
 dldmd.fit(
     {"training_data": data[: args.training], "test_data": data[args.training :]}
 )
