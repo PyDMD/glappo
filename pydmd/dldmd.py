@@ -44,6 +44,7 @@ class DLDMD(torch.nn.Module):
         batch_size=256,
         label="dldmd_run",
         eval_on_cpu=True,
+        print_prediction_loss=False,
     ):
         super().__init__()
 
@@ -69,6 +70,7 @@ class DLDMD(torch.nn.Module):
         self._batch_size = batch_size
         self._label = label
         self._eval_on_cpu = eval_on_cpu
+        self._print_prediction_loss = print_prediction_loss
 
         logging.info(f"DMD instance: {type(dmd)}")
         self._dmd = dmd
@@ -131,7 +133,6 @@ class DLDMD(torch.nn.Module):
         decoder_loss = mse_loss(self._decoder(self._encoder(input)), input)
 
         batched_psp = self._dmd.operator.phase_space_prediction
-
         psp_loss = torch.linalg.matrix_norm(batched_psp).sum()
 
         reconstruction_loss = mse_loss(
@@ -168,11 +169,22 @@ class DLDMD(torch.nn.Module):
     def _eval_step(self, loader):
         self.eval()
         loss_sum = 0.0
+        prediction_sum = 0.0
         for i, minibatch in enumerate(loader):
             output = self(self._dmd_training_snapshots(minibatch))
             loss = self._compute_loss(output, minibatch)
             loss_sum += loss.item()
-        return loss_sum / (i + 1)
+
+            if self._print_prediction_loss:
+                prediction_sum += mse_loss(
+                    self._prediction_snapshots(output),
+                    self._prediction_snapshots(minibatch),
+                ).item()
+
+        loss_avg = loss_sum / (i + 1)
+        if self._print_prediction_loss:
+            return loss_avg, prediction_sum / (i + 1)
+        return loss_avg
 
     def _save_model(self, label="dldmd"):
         temp = self._dmd
@@ -212,13 +224,25 @@ class DLDMD(torch.nn.Module):
             model_label = f"{self._label}_e{epoch}"
             self._save_model(model_label)
             eval_model = self._load_model_for_eval(model_label)
-            eval_time, eval_loss = eval_model._eval_step(test_dataloader)
+
+            eval = eval_model._eval_step(test_dataloader)
+            if self._print_prediction_loss:
+                eval_time, (eval_loss, prediction_loss) = eval
+            else:
+                eval_time, eval_loss = eval
+
+            if not eval_loss_arr or min(eval_loss_arr) > eval_loss:
+                self._save_model(f"{self._label}_best")
             eval_loss_arr.append(eval_loss)
 
             if epoch % self._print_every == 0:
                 logging.info(
                     f"[{epoch}] loss: {eval_loss:.4f}, train_time: {training_time:.2f} ms, eval_time: {eval_time:.2f} ms"
                 )
+                if self._print_prediction_loss:
+                    logging.info(
+                        f"[{epoch}] prediction loss: {prediction_loss:.4f}"
+                    )
             else:
                 os.remove(model_label + ".pl")
 

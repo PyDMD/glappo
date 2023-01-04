@@ -60,6 +60,11 @@ parser.add_argument(
     action="store_true",
 )
 parser.add_argument(
+    "--print_prediction_loss",
+    help="If set, prediction loss is printed in addition to loss",
+    action="store_true",
+)
+parser.add_argument(
     "--stop",
     help="Number of epochs or required accuracy",
     default=1000,
@@ -103,7 +108,8 @@ def allocate_dldmd(input_size):
         print_every=args.printevery,
         epochs=args.stop,
         eval_on_cpu=args.eval_on_cpu,
-        label=args.label
+        label=args.label,
+        print_prediction_loss=args.print_prediction_loss
     )
 
 
@@ -155,4 +161,3 @@ else:
     dldmd = dldmd.to(dtype=data.dtype)
 
 dldmd.fit(data_dict)
-save(dldmd._encoder, dldmd._decoder)
