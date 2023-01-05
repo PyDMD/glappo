@@ -68,8 +68,8 @@ parser.add_argument(
 parser.add_argument(
     "--stop",
     help="Number of epochs or required accuracy",
-    default=1000,
-    type=float,
+    default="1000",
+    type=str,
 )
 parser.add_argument(
     "--label",
@@ -113,7 +113,7 @@ def allocate_dldmd(input_size):
         phase_space_weight=args.phase_space_weight,
         dmd=dmd,
         print_every=args.printevery,
-        epochs=args.stop,
+        epochs=float(args.stop) if "." in args.stop else int(args.stop),
         eval_on_cpu=args.eval_on_cpu,
         label=args.label,
         print_prediction_loss=args.print_prediction_loss,
