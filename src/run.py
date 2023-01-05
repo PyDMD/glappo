@@ -6,9 +6,10 @@ logging.getLogger().setLevel(logging.INFO)
 from torch.nn import Sequential, ReLU, Linear, Module
 
 import torch
-from pydmd import DLDMD, DMD
+from pydmd import DMD
 
 from data import data_maker_fluid_flow_full
+from dldmd import DLDMD
 
 # ----------------- CLI --------------------
 
