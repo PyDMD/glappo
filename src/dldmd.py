@@ -237,11 +237,11 @@ class DLDMD(torch.nn.Module):
 
             if epoch % self._print_every == 0:
                 logging.info(
-                    f"[{epoch}] loss: {eval_loss:.4f}, train_time: {training_time:.2f} ms, eval_time: {eval_time:.2f} ms"
+                    f"[{epoch}] loss: {eval_loss:.7f}, train_time: {training_time:.2f} ms, eval_time: {eval_time:.2f} ms"
                 )
                 if self._print_prediction_loss:
                     logging.info(
-                        f"[{epoch}] prediction loss: {prediction_loss:.4f}"
+                        f"[{epoch}] prediction loss: {prediction_loss:.7f}"
                     )
             else:
                 os.remove(model_label + ".pl")
