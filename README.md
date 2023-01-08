@@ -24,7 +24,27 @@ frameworks (NumPy, PyTorch, ...)
 This has been achieved by defining a new set of 
 [classes](https://github.com/fAndreuzzi/PyDMD/tree/generic-linalg/pydmd/linalg) implementing 
 a common linear algebra interface. PyDMD uses this common interface under the hood, and concrete
-implementations of the interface are provided for the target frameworks.
+implementations of the interface are provided for the target frameworks. Below we display a small
+sample from those classes:
+```python
+class LinalgBase:
+    @classmethod
+    def svd(cls, X, *args, **kwargs):
+        raise NotImplementedError
+
+class LinalgNumPy(LinalgBase):
+    @classmethod
+    def svd(cls, X, *args, **kwargs):
+        return np.linalg.svd(X, *args, **kwargs)
+
+class LinalgPyTorch(LinalgBase):
+    @classmethod
+    def svd(cls, X, *args, **kwargs):
+        import torch
+
+        return torch.linalg.svd(X, *args, **kwargs)
+```
+At the moment we provide support for about 40 functions.
 
 An additional challenge was posed by batched (or *tensorized*) training. Most operators in
 PyTorch support a leading *batch* dimension which enables broadcasting the operator to all the
