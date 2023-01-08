@@ -28,15 +28,19 @@ implementations of the interface are provided for the target frameworks.
 
 An additional challenge was posed by batched (or *tensorized*) training. Most operators in
 PyTorch support a leading *batch* dimension which enables broadcasting the operator to all the
-samples in a batch (e.g. `torch.nn.Linear` receives in input a tensor of shape $(*, H_in)$).
+samples in a batch (e.g. `torch.nn.Linear` receives in input a tensor of shape $(*, H_{in})$ ).
 This yields both much more idiomatic code and better performance, as we can fully exploit
 vectorization or GPU computing power.
 
-The goal here was to support batched training avoiding overcomplicated code with tons of
+The goal here was to support tensorized training avoiding overcomplicated code with tons of
 conditional branches (`if X.ndim == 4:`). This was mainly achieved thanks to the `...` operator
 in PyTorch and to same careful swapping of tensor axes. As we're going to see in the benchmark
 this sub-step is fundamental to fully support Deep Learning on DMD, as the performance toll
 imposed otherwise would have made unfeasible any kind of training.
+
+**DMD tensorized fit() performance benchmark**
+
+![image](https://user-images.githubusercontent.com/8464342/211190539-fc942030-8823-4b91-be3d-631bf66f1e31.png)
 
 ### Step 2
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
