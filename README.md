@@ -6,13 +6,13 @@ This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyD
 
 ## Progress
 The project is comprised of different steps, summarized below:
-- [ ] 1. PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
+- [ ] **Step 1**: PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
     - [ ] Generic PyDMD linear algebra formulation
     - [x] Adapt NumPy concrete implementation
     - [x] Add PyTorch concrete implementation
     - [ ] Add JAX concrete implementation (see https://jax.readthedocs.io/en/latest/jax.numpy.html)
     - [ ] Batched PyDMD formulation 
-- [x] 2. Enhance DMD with Deep Learning techniques
+- [x] **Step 2**: Enhance DMD with Deep Learning techniques
     - [ ] DLDMD
     - [ ] Trainable DMD hyperparameters
 
