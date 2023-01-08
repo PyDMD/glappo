@@ -59,13 +59,15 @@ this sub-step is fundamental to fully support Deep Learning on DMD, as the perfo
 imposed otherwise would have made unfeasible any kind of training.
 
 **DMD tensorized fit() performance benchmark**
+The following plot represents the performance (in milliseconds) of a batched/tensorized
+DMD with different backends on 601 snapshots 3-dimensional snapshots.
 
 ![image](https://user-images.githubusercontent.com/8464342/211190539-fc942030-8823-4b91-be3d-631bf66f1e31.png)
 
 ### Step 2
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
 the implementation for some of the resulting models. It would be interesting to explore the
-potential of trainable DMD hyperparameters (e.g. `d` in `HankelDMD`) if time permits.
+potential of trainable DMD hyperparameters (e.g. `d` in `HankelDMD`).
 
 ## References
 - Alford-Lago, Daniel J., et al. "Deep learning enhanced dynamic mode decomposition." Chaos: An Interdisciplinary Journal of Nonlinear Science 32.3 (2022): 033116.
