@@ -65,6 +65,7 @@ DMD with different backends on 601 snapshots 3-dimensional snapshots.
 ![image](https://user-images.githubusercontent.com/8464342/211190539-fc942030-8823-4b91-be3d-631bf66f1e31.png)
 
 **DMD variants to be ported**
+
 We plan support for the DMD variants below:
 - [x] CDMD
 - [ ] DMD Modes tuner
