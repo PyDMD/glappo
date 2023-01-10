@@ -75,15 +75,15 @@ We plan support for the DMD variants below:
 - [x] DMDOperator
 - [x] FbDMD
 - [x] HankelDMD
-- [?] HavokDMD
+- [ ] HAVOK
 - [x] HODMD
 - [ ] MRDMD
 - [ ] OptDMD
-- [?] ParametricDMD
+- [ ] ParametricDMD
 - [x] RDMD
 - [ ] SPDMD
 - [x] SubspaceDMD
-- [?] Fix second-fit backpropagation
+- [ ] Fix second-fit backpropagation
 
 ### Step 2
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
