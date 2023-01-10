@@ -64,6 +64,26 @@ DMD with different backends on 601 snapshots 3-dimensional snapshots.
 
 ![image](https://user-images.githubusercontent.com/8464342/211190539-fc942030-8823-4b91-be3d-631bf66f1e31.png)
 
+**DMD variants to be ported**
+We plan support for the DMD variants below:
+- [x] CDMD
+- [ ] DMD Modes tuner
+- [x] DMD
+- [x] DMDBase
+- [x] DMDC
+- [x] DMDOperator
+- [x] FbDMD
+- [x] HankelDMD
+- [?] HavokDMD
+- [x] HODMD
+- [ ] MRDMD
+- [ ] OptDMD
+- [?] ParametricDMD
+- [x] RDMD
+- [ ] SPDMD
+- [x] SubspaceDMD
+- [?] Fix second-fit backpropagation
+
 ### Step 2
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
 the implementation for some of the resulting models. It would be interesting to explore the
