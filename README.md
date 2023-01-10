@@ -4,6 +4,16 @@ on PyDMD.
 
 This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyDMD.
 
+## Added value
+- Enable DMD on GPU;
+- Enable backpropagation through DMD on (in parantheses what we can optimize on):
+    - Reconstructed data (accuracy, denoisification, ...)
+    - Predicted data (prediction accuracy, stability, ...)
+    - DMD modes
+    - DMD amplitudes (sparsity-promoting, regularization, ...)
+    - DMD eigenvalues (stability)
+- Enable batched/tensorized DMD for high performance computational campaigns.
+
 ## Progress
 The project is comprised of different steps, summarized below:
 - [ ] **Step 1**: PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
