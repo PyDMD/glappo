@@ -12,7 +12,8 @@ This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyD
     - DMD modes
     - DMD amplitudes (sparsity-promoting, regularization, ...)
     - DMD eigenvalues (stability)
-- Enable batched/tensorized DMD for high performance computational campaigns.
+- Enable batched/tensorized DMD for high performance computational campaigns;
+    - Non-DL variants can benefit from this as well (e.g. `ParametricDMD`).
 
 ## Progress
 The project is comprised of different steps, summarized below:
