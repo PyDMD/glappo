@@ -4,6 +4,17 @@ on PyDMD.
 
 This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyDMD.
 
+## Added value
+- Enable DMD on GPU;
+- Enable backpropagation through DMD on (in parantheses what we can optimize on):
+    - Reconstructed data (accuracy, denoisification, ...)
+    - Predicted data (prediction accuracy, stability, ...)
+    - DMD modes
+    - DMD amplitudes (sparsity-promoting, regularization, ...)
+    - DMD eigenvalues (stability)
+- Enable batched/tensorized DMD for high performance computational campaigns;
+    - Non-DL variants can benefit from this as well (e.g. `ParametricDMD`).
+
 ## Progress
 The project is comprised of different steps, summarized below:
 - [ ] **Step 1**: PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
@@ -63,6 +74,27 @@ The following plot represents the performance (in milliseconds) of a batched/ten
 DMD with different backends on 601 snapshots 3-dimensional snapshots.
 
 ![image](https://user-images.githubusercontent.com/8464342/211190539-fc942030-8823-4b91-be3d-631bf66f1e31.png)
+
+**DMD variants to be ported**
+
+We plan support for the DMD variants below:
+- [x] CDMD
+- [ ] DMD Modes tuner
+- [x] DMD
+- [x] DMDBase
+- [x] DMDC
+- [x] DMDOperator
+- [x] FbDMD
+- [x] HankelDMD
+- [ ] HAVOK
+- [x] HODMD
+- [ ] MRDMD
+- [ ] OptDMD
+- [ ] ParametricDMD
+- [x] RDMD
+- [ ] SPDMD
+- [x] SubspaceDMD
+- [ ] Fix second-fit backpropagation
 
 ### Step 2
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
