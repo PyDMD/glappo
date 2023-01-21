@@ -134,7 +134,7 @@ data = data_maker_fluid_flow_full(
     dt=0.01,
     tf=6,
 ).swapaxes(-1,-2)
-data = torch.from_numpy(data)
+data = torch.from_numpy(data)[:, :-1]
 training_data = data[: args.training]
 test_data = data[args.training :]
 
