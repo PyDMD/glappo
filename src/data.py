@@ -359,6 +359,40 @@ def data_maker_duffing_bollt(x_lower1, x_upper1, x_lower2, x_upper2, n_ic=10000,
             data_mat[ii, :, jj+1] = rk4(data_mat[ii, :, jj], dt, dyn_sys_duffing_bollt)
     return np.transpose(data_mat, [0, 2, 1])
 
+def heat_equation(x_width, y_width, r, dx, dy, nt, D):
+    Tcool, Thot = 300, 700
+
+    nx, ny = int(x_width/dx), int(y_width/dy)
+
+    dx2, dy2 = dx*dx, dy*dy
+    dt = dx2 * dy2 / (2 * D * (dx2 + dy2))
+
+    shallow = np.full((nx, ny), fill_value=Tcool, dtype=np.float64)
+
+    def do_timestep(u_prev):
+        # Propagate with forward-difference in time, central-difference in space
+        u = shallow.copy()
+        u[1:-1, 1:-1] = u_prev[1:-1, 1:-1] + D * dt * (
+            (u_prev[2:, 1:-1] - 2*u_prev[1:-1, 1:-1] + u_prev[:-2, 1:-1])/dx2
+            + (u_prev[1:-1, 2:] - 2*u_prev[1:-1, 1:-1] + u_prev[1:-1, :-2])/dy2)
+        return u
+
+    data = np.empty((nt, nx, ny), dtype=shallow.dtype)
+    
+    u0 = shallow.copy()
+    # Initial conditions - circle of radius r centred at (cx,cy)
+    for ix in range(nx):
+        for iy in range(ny):
+            if (dx**2)*(nx // 2 - ix)**2 + (dy**2)*(ny // 2 - iy)**2 < r:
+                u0[ix, iy] = Thot
+
+    data[0] = u0
+
+    for i in range(1,nt):
+        data[i] = do_timestep(data[i-1])
+    return data
+
+
 # ==============================================================================
 # Test program
 # ==============================================================================

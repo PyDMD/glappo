@@ -3,13 +3,14 @@ import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
-from torch.nn import Sequential, ReLU, Linear, Module
-
 import torch
 from pydmd import DMD
 
 from data import data_maker_fluid_flow_full
 from dldmd import DLDMD
+from mlp import MLP
+
+from train import train_dldmd
 
 # ----------------- CLI --------------------
 
@@ -24,7 +25,7 @@ parser.add_argument(
     "--immersion",
     help="Immersion size",
     type=int,
-    default="5",
+    required=True
 )
 parser.add_argument("--svd_rank", type=float, default=-1)
 parser.add_argument(
@@ -66,10 +67,16 @@ parser.add_argument(
     action="store_true",
 )
 parser.add_argument(
-    "--stop",
-    help="Number of epochs or required accuracy",
-    default="1000",
-    type=str,
+    "--epochs",
+    help="Number of epochs",
+    default=1000,
+    type=int,
+)
+parser.add_argument(
+    "--maxloss",
+    help="Maximum acceptable loss (training stops if achieved)",
+    default=0.0,
+    type=float,
 )
 parser.add_argument(
     "--label",
@@ -112,28 +119,8 @@ def allocate_dldmd(input_size):
         prediction_weight=args.prediction_weight,
         phase_space_weight=args.phase_space_weight,
         dmd=dmd,
-        print_every=args.printevery,
-        epochs=float(args.stop) if "." in args.stop else int(args.stop),
-        eval_on_cpu=args.eval_on_cpu,
-        label=args.label,
-        print_prediction_loss=args.print_prediction_loss,
-        n_prediction_snapshots=args.n_prediction_snapshots
+        n_prediction_snapshots=args.n_prediction_snapshots,
     )
-
-
-class MLP(Module):
-    def __init__(self, input_size, output_size, hidden_layer_size):
-        super().__init__()
-        self.layers = Sequential(
-            Linear(input_size, hidden_layer_size),
-            ReLU(),
-            Linear(hidden_layer_size, hidden_layer_size),
-            ReLU(),
-            Linear(hidden_layer_size, output_size),
-        )
-
-    def forward(self, x):
-        return self.layers(x)
 
 
 data = data_maker_fluid_flow_full(
@@ -146,26 +133,29 @@ data = data_maker_fluid_flow_full(
     n_ic=args.training + args.eval,
     dt=0.01,
     tf=6,
-)
+).swapaxes(-1,-2)
 data = torch.from_numpy(data)
-data_dict = {
-    "training_data": data[: args.training],
-    "test_data": data[args.training :],
-}
+training_data = data[: args.training]
+test_data = data[args.training :]
 
-dldmd = allocate_dldmd(data.shape[-1])
+dldmd = allocate_dldmd(data.shape[-2])
 if torch.cuda.is_available():
-    device = torch.device("cuda")
-
-    data_dict["training_data"] = data_dict["training_data"].to(device)
+    training_data = training_data.cuda()
     if not args.eval_on_cpu:
-        data_dict["test_data"] = data_dict["test_data"].to(device)
-    else:
-        data_dict["test_data"] = data_dict["test_data"].clone()
-        del data
+        test_data = test_data.cuda()
 
-    dldmd = dldmd.to(device, dtype=data.dtype)
+    dldmd = dldmd.to("cuda", dtype=data.dtype)
 else:
     dldmd = dldmd.to(dtype=data.dtype)
 
-dldmd.fit(data_dict)
+train_dldmd(
+    dldmd=dldmd,
+    training_data=training_data,
+    test_data=test_data,
+    epochs=args.epochs,
+    max_loss=args.maxloss,
+    print_prediction_loss=args.print_prediction_loss,
+    print_every=args.printevery,
+    label=args.label,
+    eval_on_cpu=args.eval_on_cpu,
+)
