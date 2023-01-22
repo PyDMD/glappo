@@ -6,7 +6,7 @@ logging.getLogger().setLevel(logging.INFO)
 import torch
 from pydmd import DMD
 
-from data import data_maker_fluid_flow_full
+from data import data_maker_fluid_flow_full, data_maker_duffing
 from dldmd import DLDMD
 from mlp import MLP
 
@@ -123,18 +123,16 @@ def allocate_dldmd(input_size):
     )
 
 
-data = data_maker_fluid_flow_full(
-    x1_lower=-1.1,
-    x1_upper=1.1,
-    x2_lower=-1.1,
-    x2_upper=1.1,
-    x3_lower=0.0,
-    x3_upper=2,
+data = data_maker_duffing(
+    x_lower1=-1,
+    x_upper1=1,
+    x_lower2=-1,
+    x_upper2=1,
     n_ic=args.training + args.eval,
-    dt=0.01,
-    tf=6,
+    dt=0.05,
+    tf=200,
 ).swapaxes(-1,-2)
-data = torch.from_numpy(data)[:, :-1]
+data = torch.from_numpy(data)
 training_data = data[: args.training]
 test_data = data[args.training :]
 
