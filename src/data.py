@@ -392,6 +392,14 @@ def heat_equation(x_width, y_width, r, dx, dy, nt, D):
         data[i] = do_timestep(data[i-1])
     return data
 
+def data_maker_heat(x_width, y_width, dx, dy, nt, n_ic=10000, seed=None):
+    np.random.seed(seed=seed)
+
+    Ds = np.random.uniform(1.e-16, 100, n_ic)
+    rs = np.random.uniform(1.e-16, min(x_width, y_width) / 2, n_ic)
+
+    return np.stack([heat_equation(x_width, y_width, ri, dx, dy, nt, Di) for ri, Di in zip(Ds, rs)])
+
 
 # ==============================================================================
 # Test program
