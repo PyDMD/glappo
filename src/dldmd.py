@@ -31,14 +31,19 @@ class DLDMD(Module):
 
         self._encoder = encoder
         self._decoder = decoder
+        logger.info("----- DLDMD children -----")
+        logger.info(tuple(self.children()))
 
         self._optimizer = optimizer(self.parameters(), **optimizer_kwargs)
-        logger.info(f"Optimizer: {self._optimizer}")
+        logger.info(f"Optimizer: {self._optimizer}, params: {optimizer_kwargs}")
 
         self._encoding_weight = encoding_weight
         self._reconstruction_weight = reconstruction_weight
         self._prediction_weight = prediction_weight
         self._phase_space_weight = phase_space_weight
+        logger.info(
+            f"Weights: encoding={self._encoding_weight}, DMD={self._phase_space_weight}, reconstruction={self._reconstruction_weight}, prediction={self._prediction_weight}"
+        )
 
         self._eval_on_cpu = eval_on_cpu
 
@@ -51,9 +56,6 @@ class DLDMD(Module):
         logger.info(
             f"DMD will predict {n_prediction_snapshots} snapshots during training."
         )
-
-        logger.info("----- DLDMD children -----")
-        logger.info(tuple(self.children()))
 
     def forward(self, input):
         if input.ndim == 2:
