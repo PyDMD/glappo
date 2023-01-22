@@ -133,18 +133,19 @@ data = data_maker_duffing(
     tf=200,
 ).swapaxes(-1,-2)
 data = torch.from_numpy(data)
-training_data = data[: args.training]
-test_data = data[args.training :]
+training_data = data[: args.training].clone()
+test_data = data[args.training :].clone()
+del data
 
-dldmd = allocate_dldmd(data.shape[-2])
+dldmd = allocate_dldmd(training_data.shape[-2])
 if torch.cuda.is_available():
     training_data = training_data.cuda()
     if not args.eval_on_cpu:
         test_data = test_data.cuda()
 
-    dldmd = dldmd.to("cuda", dtype=data.dtype)
+    dldmd = dldmd.to("cuda", dtype=training_data.dtype)
 else:
-    dldmd = dldmd.to(dtype=data.dtype)
+    dldmd = dldmd.to(dtype=training_data.dtype)
 
 train_dldmd(
     dldmd=dldmd,

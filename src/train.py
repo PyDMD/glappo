@@ -1,5 +1,6 @@
 import os
 import logging
+import gc
 
 import numpy as np
 import torch
@@ -63,6 +64,10 @@ def train_dldmd(
 
         if eval_loss < max_loss:
             break
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
 
     np.save(f"{label}_train_loss.npy", train_loss_arr)
     np.save(f"{label}_eval_loss.npy", eval_loss_arr)
