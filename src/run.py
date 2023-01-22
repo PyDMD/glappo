@@ -90,6 +90,7 @@ parser.add_argument(
     default=1,
     type=int,
 )
+parser.add_argument("--tf", default=50, type=int)
 args = parser.parse_args()
 
 # ----------------- CLI --------------------
@@ -130,7 +131,7 @@ data = data_maker_duffing(
     x_upper2=1,
     n_ic=args.training + args.eval,
     dt=0.05,
-    tf=200,
+    tf=args.tf,
 ).swapaxes(-1,-2)
 data = torch.from_numpy(data)
 training_data = data[: args.training].clone()
