@@ -88,12 +88,12 @@ class DLDMD(Module):
 
     def _dmd_training_snapshots(self, snapshots):
         if self._n_prediction_snapshots > 0:
-            return snapshots[..., :, : -self._n_prediction_snapshots]
+            return snapshots[..., : -self._n_prediction_snapshots]
         return snapshots
 
     def _prediction_snapshots(self, snapshots):
         if self._n_prediction_snapshots > 0:
-            return snapshots[..., :, -self._n_prediction_snapshots :]
+            return snapshots[..., -self._n_prediction_snapshots :]
         return torch.zeros(0)
 
     def _compute_loss(self, output, input):
@@ -107,7 +107,7 @@ class DLDMD(Module):
             input,
         )
 
-        psp_loss = self._dmd.operator._dmd_phase_space_error.sum()
+        psp_loss = self._dmd.operator._dmd_phase_space_error.mean()
 
         reconstruction_loss = mse_loss(
             self._dmd_training_snapshots(output),
