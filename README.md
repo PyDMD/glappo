@@ -18,13 +18,13 @@ This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyD
 ## Progress
 The project is comprised of different steps, summarized below:
 - [ ] **Step 1**: PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
-    - [ ] Generic PyDMD linear algebra formulation
+    - [x] Generic PyDMD linear algebra formulation
     - [x] Adapt NumPy concrete implementation
     - [x] Add PyTorch concrete implementation
     - [ ] Add JAX concrete implementation (see https://jax.readthedocs.io/en/latest/jax.numpy.html)
-    - [ ] Batched PyDMD formulation 
+    - [x] Batched PyDMD formulation 
 - [x] **Step 2**: Enhance DMD with Deep Learning techniques
-    - [ ] DLDMD
+    - [x] DLDMD
     - [ ] Trainable DMD hyperparameters
 
 ### Step 1
@@ -88,7 +88,7 @@ We plan support for the DMD variants below:
 - [x] HankelDMD
 - [ ] HAVOK
 - [x] HODMD
-- [ ] MRDMD
+- [x] MRDMD
 - [ ] OptDMD
 - [ ] ParametricDMD
 - [x] RDMD
@@ -100,6 +100,16 @@ We plan support for the DMD variants below:
 The pair DMD+Deep Learning has been explored a little bit in literature. In `src/` we provide
 the implementation for some of the resulting models. It would be interesting to explore the
 potential of trainable DMD hyperparameters (e.g. `d` in `HankelDMD`).
+
+## DLDMD
+For more results and implementation, see `src/dldmd.py` or `notebooks/dldmd.ipynb`.
+
+### Reconstruction/prediction accuracy (VS standard DMD)
+![image](https://user-images.githubusercontent.com/8464342/214721981-01a2e5d4-6e4e-4201-98c3-56955f191d93.png)
+
+### Encoder/decoder pair
+![image](https://user-images.githubusercontent.com/8464342/214722370-54621935-1943-4fdb-95ed-6c87b6cda17a.png)
+
 
 ## References
 - Alford-Lago, Daniel J., et al. "Deep learning enhanced dynamic mode decomposition." Chaos: An Interdisciplinary Journal of Nonlinear Science 32.3 (2022): 033116.
