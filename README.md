@@ -1,10 +1,21 @@
 # Deep-Learning enhanced Dynamic Mode Decomposition
-Implementation of some Deep-Learning techniques to optimize DMD performance, based
-on PyDMD. 
+Twin repository to explain mathLab/PyDMD#299, which enables support for generic linear
+algebra frameworks in PyDMD.
 
-This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyDMD.
+## PyDMD
+PyDMD is the widest open source framework for 
+[Dynamic Mode Decomposition (DMD)](https://en.wikipedia.org/wiki/Dynamic_mode_decomposition). 
+featuring 14 documented and tested DMD variants. It provides tools for DMD analysis (plotting, 
+eigenvalues and mode manipulation/analysis), along with development tools to extend the 
+framework with custom code, e.g. new DMD variants or tailored post-processing.
 
-## Added value
+PyDMD is currently maintained by N. Demo (SISSA), M. Tezzele (Oden institute) and F. 
+Andreuzzi (CERN), with an open collaboration with UW (Seattle).
+
+## Project
+The aim of mathLab/PyDMD#299 is to make PyDMD agnostic on the linear algebra framework.
+
+### Added value
 - Enable DMD on GPU;
 - Enable backpropagation through DMD on (in parantheses what we can optimize on):
     - Reconstructed data (accuracy, denoisification, ...)
@@ -15,7 +26,7 @@ This project is made possible by mathLab/PyDMD#299, which enables PyTorch in PyD
 - Enable batched/tensorized DMD for high performance computational campaigns;
     - Non-DL variants can benefit from this as well (e.g. `ParametricDMD`).
 
-## Progress
+### Progress
 The project is comprised of different steps, summarized below:
 - [ ] **Step 1**: PyDMD support for **backpropagation** and **GPU** architectures: mathLab/PyDMD#299
     - [x] Generic PyDMD linear algebra formulation
