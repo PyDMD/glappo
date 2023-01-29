@@ -5,8 +5,8 @@ algebra frameworks in PyDMD.
 ## PyDMD
 PyDMD is the widest open source framework for 
 [Dynamic Mode Decomposition (DMD)](https://en.wikipedia.org/wiki/Dynamic_mode_decomposition). 
-featuring 14 documented and tested DMD variants. It provides tools for DMD analysis (plotting, 
-eigenvalues and mode manipulation/analysis), along with development tools to extend the 
+Along with the implementation of 14 DMD variants, PyDMD provides tools for DMD analysis (plotting, 
+eigenvalues and mode manipulation/analysis), and development tools to extend the 
 framework with custom code, e.g. new DMD variants or tailored post-processing.
 
 PyDMD is currently maintained by N. Demo (SISSA), M. Tezzele (Oden institute) and F. 
