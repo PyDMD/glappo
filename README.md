@@ -1,5 +1,6 @@
-# Deep-Learning enhanced Dynamic Mode Decomposition
-Twin repository to explain mathLab/PyDMD#299, which enables support for generic linear
+# GLAPPO
+GLAPPO (**G**eneric **L**inear **A**lgebra **P**orting of **P**yDMD [**O**ngoing]) is the
+twin repository of mathLab/PyDMD#299, which enables support for generic linear
 algebra frameworks in PyDMD.
 
 ## PyDMD
@@ -13,7 +14,7 @@ PyDMD is currently maintained by N. Demo (SISSA), M. Tezzele (Oden institute) an
 Andreuzzi (CERN), with an open collaboration with UW (Seattle).
 
 ## Project
-The aim of mathLab/PyDMD#299 is to make PyDMD agnostic on the linear algebra framework.
+The aim of **GLAPPO** is to make PyDMD agnostic on the linear algebra framework.
 
 ![pydmd-architecture](https://user-images.githubusercontent.com/8464342/215337976-8f5978bd-d7a9-4b97-8e12-1be83470cbde.png)
 
@@ -110,14 +111,18 @@ as the performance toll imposed otherwise would have made unfeasible any kind of
 | SubspaceDMD | :white_check_mark: | :white_check_mark: | :white_check_mark: |                                                        |
 
 ## DLDMD
-For more results and implementation, see `src/dldmd.py` or `notebooks/dldmd.ipynb`.
+We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
+For the implementation check `src/dldmd.py` and `notebooks/dldmd.ipynb`.
 
 ### Reconstruction/prediction accuracy (VS standard DMD)
+DLDMD performs much better than the standard DMD both in reconstruction and prediction, and is able to understand
+the dynamic of the system much better than its simpler counterpart.
 ![image](https://user-images.githubusercontent.com/8464342/214721981-01a2e5d4-6e4e-4201-98c3-56955f191d93.png)
 
 ### Encoder/decoder pair
+DLDMD uses an encoder/decoder pair whose goal is to map snapshots onto a latent space which should be as easy as possible
+to interpret for DMD. We visualize the latent snapshots (left) along with their decoded version (right).
 ![image](https://user-images.githubusercontent.com/8464342/214722370-54621935-1943-4fdb-95ed-6c87b6cda17a.png)
-
 
 ## References
 - Alford-Lago, Daniel J., et al. "Deep learning enhanced dynamic mode decomposition." Chaos: An Interdisciplinary Journal of Nonlinear Science 32.3 (2022): 033116.
