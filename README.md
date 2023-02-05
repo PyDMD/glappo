@@ -114,6 +114,8 @@ as the performance toll imposed otherwise would have made unfeasible any kind of
 We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
 For the implementation check `src/dldmd.py` and `notebooks/dldmd.ipynb`.
 
+![image](imgs/dldmd.drawio.png)
+
 ### Reconstruction/prediction accuracy (VS standard DMD)
 DLDMD performs much better than the standard DMD both in reconstruction and prediction, and is able to understand
 the dynamic of the system much better than its simpler counterpart.
