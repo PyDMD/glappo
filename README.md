@@ -1,6 +1,6 @@
 # GLAPPO
 GLAPPO (**G**eneric **L**inear **A**lgebra **P**orting of **P**yDMD [**O**ngoing]) is the
-twin repository of mathLab/PyDMD#299, which enables support for generic linear
+twin repository of PyDMD/PyDMD#299, which enables support for generic linear
 algebra frameworks in PyDMD.
 
 ## PyDMD
@@ -23,7 +23,7 @@ of re-implementing the DMD algorithms in the particular interface offered by the
 PyDMD scripts on GPU would enable acceleration and increase the scale of possible experiments.
 
 **Backpropagation through DMD** --- So far, PyDMD has been a kind-of *black hole* for backpropagation, i.e. gradient information used to be eaten and never
-given back. Thanks to mathLab/PyDMD#299 PyDMD becomes part of the backpropagation graph, thus enabling differentiation
+given back. Thanks to PyDMD/PyDMD#299 PyDMD becomes part of the backpropagation graph, thus enabling differentiation
 through the DMD algorithm for all the DMD variants ported to the new generic linear algebra framework.
 
 **Batched/tensorized DMD** --- Many linear algebra frameworks (e.g. PyTorch) dedicate the leading axis to the *batch* dimension. This means that
