@@ -10,9 +10,6 @@ Along with the implementation of 14 DMD variants, PyDMD provides tools for DMD a
 eigenvalues and mode manipulation/analysis), and development tools to extend the 
 framework with custom code, e.g. new DMD variants or tailored post-processing.
 
-PyDMD is currently maintained by N. Demo (SISSA), M. Tezzele (Oden institute) and F. 
-Andreuzzi (CERN), with an open collaboration with UW (Seattle).
-
 ## Project
 The aim of **GLAPPO** is to make PyDMD agnostic on the linear algebra framework.
 
