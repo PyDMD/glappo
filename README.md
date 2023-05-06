@@ -96,19 +96,19 @@ as the performance toll imposed otherwise would have made unfeasible any kind of
 **DMD variants to be ported**
 | DMD variant | `pydmd.linalg`     | Backpropagation    | Tensorized         | Notes                                                  |
 |:------------|:------------------:|:------------------:|:------------------:|:-------------------------------------------------------|
-| BOP-DMD     | :x:                | :x:                | :x:                | New variant, needs stronger test coverage to avoid introducing "quiet errors" |
-| CDMD        | :white_check_mark: | :x:                | :white_check_mark: |                                                        |
-| DMD         | :white_check_mark: | :white_check_mark: | :white_check_mark: |                                                        |
-| DMDc        | :white_check_mark: | :x:                | :white_check_mark: |                                                        |
-| FbDMD       | :white_check_mark: | :x:                | :white_check_mark: |                                                        |
-| HankelDMD   | :white_check_mark: | :white_check_mark: | :white_check_mark: |                                                        |
-| HODMD       | :white_check_mark: | :x:                | :white_check_mark: |                                                        |
+| BOP-DMD     | :x:                | :x:                | :x:                | New variant, needs stronger test coverage to avoid introducing "quiet" errors |
+| CDMD        | :heavy_check_mark: | :x:                | :heavy_check_mark: |                                                        |
+| DMD         | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |                                                        |
+| DMDc        | :heavy_check_mark: | :x:                | :heavy_check_mark: |                                                        |
+| FbDMD       | :heavy_check_mark: | :x:                | :heavy_check_mark: |                                                        |
+| HankelDMD   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |                                                        |
+| HODMD       | :heavy_check_mark: | :x:                | :heavy_check_mark: |                                                        |
 | HAVOK       | :x:                | :x:                | :x:                | Internal dependencies on `scipy.signal`                |
-| MrDMD       | :white_check_mark: | :x:                | :white_check_mark: |                                                        |
+| MrDMD       | :heavy_check_mark: | :x:                | :heavy_check_mark: |                                                        |
 | OptDMD      | :x:                | :x:                | :x:                | Not well mantained, might receive major revisions soon |
-| RDMD        | :white_check_mark: | :white_check_mark: | :white_check_mark: |                                                        |
+| RDMD        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |                                                        |
 | SPDMD       | :x:                | :x:                | :x:                | Mixture of sparse/dense matrices                       |
-| SubspaceDMD | :white_check_mark: | :white_check_mark: | :white_check_mark: |                                                        |
+| SubspaceDMD | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |                                                        |
 
 ## DLDMD
 We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
