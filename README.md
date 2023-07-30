@@ -21,21 +21,45 @@ The aim of **GLAPPO** is to make PyDMD agnostic on the linear algebra framework.
 This architecture enable harvesting the peculiar features of each linear algebra framework, without the need
 of re-implementing the DMD algorithms in the particular interface offered by the framework.
 
-### Added value
+### DMD on GPU
 
-**DMD on GPU** --- GPU accelerators are widely used to boost intensive linear algebra algorithms, we expect that the ability to run seamlessly
+GPU accelerators are widely used to boost intensive linear algebra algorithms, we expect that the ability to run seamlessly
 PyDMD scripts on GPU would enable acceleration and increase the scale of possible experiments.
 
-**Backpropagation through DMD** --- So far, PyDMD has been a kind-of _black hole_ for backpropagation, i.e. gradient information used to be eaten and never
+### Backpropagation through DMD
+
+So far, PyDMD has been a kind-of _black hole_ for backpropagation, i.e. gradient information used to be eaten and never
 given back. Thanks to PyDMD/PyDMD#299 PyDMD becomes part of the backpropagation graph, thus enabling differentiation
 through the DMD algorithm for all the DMD variants ported to the new generic linear algebra framework.
 
-**Batched/tensorized DMD** --- Many linear algebra frameworks (e.g. PyTorch) dedicate the leading axis to the _batch_ dimension. This means that
+### Batched/tensorized DMD
+
+Many linear algebra frameworks (e.g. PyTorch) dedicate the leading axis to the _batch_ dimension. This means that
 any operation (be it SVD, eigendecomposition, mean) is applied independently to all the tensors resulting from
 slices of the batch dimension, such that the size of the leading axis of the output is the same as the leading axis of
 the input. In NumPy this can be achieved with a simple `for`-loop, at the cost of significantly worse performance
 (more on this in `dmd-benchmark/`). Tensorized code is also much more idiomatic (less branching, less foreign constructs,
 less unneeded variables).
+
+Like all PyTorch functions, supported DMD variants now can be trained with tensors of size `(*, M, N)`, where `*` is called 
+*batch dimension*. In order to enable batched training, you need to supply the additional parameter `batch=True` to `fit()`
+(by default it is `false`).
+
+The following snippets are equivalent:
+```python
+>>> X.shape()
+(10, 100, 20)
+>>> Y = dmd.fit(X, batch=True).reconstructed_data
+```
+
+```python
+>>> Y = torch.stack([dmd.fit(Xi).reconstructed_data for Xi in X])
+```
+
+The benefit of tensorized training are:
+- Performance boost;
+- The DMD instance retains information on all the slices of `X`;
+- Coinciseness.
 
 ### Progress
 
@@ -51,7 +75,6 @@ less unneeded variables).
 - **Validation**
   - [x] DLDMD
   - [ ] Fully working test suite
-  - [ ] Run CI on GPU
 - **Distribution**
   - [ ] Documentation for PyDMD users
   - [x] Documentation for PyDMD developers
@@ -60,9 +83,9 @@ less unneeded variables).
 
 The implementation step is clearly the most time consuming, as we need to rewrite the PyDMD framework
 in a more general way leveraging linear algebra subroutines supported by all the target frameworks
-(NumPy, PyTorch, ...), rewritten as needed in a more generic way.
+(NumPy, PyTorch, ...).
 
-This has been achieved by defining a new set of
+This was achieved by defining a new set of
 [classes](https://github.com/fAndreuzzi/PyDMD/tree/generic-linalg/pydmd/linalg) implementing
 a common linear algebra interface. The DMD variants in PyDMD uses this common interface under the hood, and
 concrete implementations of the interface are provided for the target frameworks as needed. Below we show a
@@ -90,7 +113,7 @@ class LinalgPyTorch(LinalgBase):
         return torch.linalg.svd(X, *args, **kwargs)
 ```
 
-At the moment we provide support for about 40 functions.
+At the moment we intent to support about 40 linear algebra functions.
 
 An additional challenge was posed by batched/tensorized training. The goal here was to support tensorized
 training avoiding overcomplicated code with tons of conditional branches (`if X.ndim == 4:`). This was
@@ -98,31 +121,77 @@ mainly achieved thanks to the `...` operator in PyTorch and to same careful swap
 we're going to see in the benchmark this sub-step is fundamental to fully support Deep Learning on DMD,
 as the performance toll imposed otherwise would have made unfeasible any kind of training.
 
-**DMD variants to be ported**
-| DMD variant | `pydmd.linalg` | Backpropagation | Tensorized | Notes |
-|:------------|:------------------:|:------------------:|:------------------:|:-------------------------------------------------------|
-| BOP-DMD | :x: | :x: | :x: | New variant, needs stronger test coverage to avoid introducing "quiet" errors |
-| CDMD | :heavy_check_mark: | :x: | :heavy_check_mark: | |
-| DMD | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
-| DMDc | :heavy_check_mark: | :x: | :heavy_check_mark: | |
-| FbDMD | :heavy_check_mark: | :x: | :heavy_check_mark: | |
-| HankelDMD | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
-| HAVOK | :x: | :x: | :x: | Internal dependencies on `scipy.signal` |
-| HODMD | :heavy_check_mark: | :x: | :heavy_check_mark: | |
-| MrDMD | :heavy_check_mark: | :x: | :heavy_check_mark: | |
-| OptDMD | :x: | :x: | :x: | Not well mantained, might receive major revisions soon |
-| PIDMD | :x: | :x: | :x: | |
-| RDMD | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
-| SPDMD | :x: | :x: | :x: | Mixture of sparse/dense matrices |
-| SubspaceDMD | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | |
+### Ported DMD variants
+
+- CDMD
+- DMD
+- DMDc
+- FbDMD
+- HankelDMD
+- HODMD
+- MrDMD
+- RDMD
+- SubspaceDMD
+
+### TODO
+
+- BOPDMD
+- HAVOK
+- OptDMD
+- PIDMD
+- SPDMD
 
 **Other DMD codes to be ported**
-| Code | `pydmd.linalg` | Backpropagation | Tensorized | Notes |
-|:-------------------------|:------------------:|:------------------:|:------------------:|:-------------------------------------------------------|
-| `dmd_modes_tuner.py` | :x: | :x: | :x: | |
-| `paramdmd.py` | :x: | :x: | :x: | |
 
-## DLDMD
+- `dmd_modes_tuner.py`
+- ParametricDMD
+
+
+## Developers guide
+
+A *brief* guide for PyDMD developers on how to leverage GLAPPO for new and old PyDMD codes.
+
+### Things to keep in mind
+
+Due to the strong requirements of `torch.mul` and `torch.linalg.multi_dot`, the implementation of these
+two functions in `pytorch_linalg.py` forces a cast to the biggest **complex** type found in the argumnets.
+We decided to take this path instead of placing the burden on user/implementors since for some algorithms
+it's hard to control consistently whether the output is complex or real (e.g. `torch.linalg.eig`) and casts
+will happen internally quite often. This damages memory efficiency and performance, but ensures correct 
+results. It will be subject of investigation if we receive complains from our users.
+
+This kind of casts is logged, in order to get the logs enable the `INFO` logging level:
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### Guidelines
+
+**Calling `build_linalg_module()`**
+
+Be careful on the argument on which you call `build_linalg_module()`. It may happen that some NumPy arrays
+are created *en passant* to be used as arguments for more complicated functions. These are not good candidates
+for `build_linalg_module()`, as they clearly do not convey information about user preferences on array typing.
+
+**Check aggressively...**
+
+Always check that the user is providing appropriate array pairs/triplets in PyDMD entrypoints (e.g. `fit()`).
+`linalg.py` provides some utility functions (`is_array(X)`, `assert_same_linalg_type(X,*args)`) to facilitate writing
+this kind of checks.
+
+**... but trust the team**
+
+No need to check the output of internal functions like `DMDBase._optimal_dmd_matrices()`. This clutters the
+code and provides no additional value, our PRs are carefully reviewed by developers from the core team of
+PyDMD.
+
+**Test!**
+
+Test new and old code for all new possibilities introduced by GLAPPO, for instance tensorized training. There are
+many examples in `tests`.
+
+## Results -- DLDMD
 
 We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
 For the implementation check `src/dldmd.py` and `notebooks/dldmd.ipynb`.
