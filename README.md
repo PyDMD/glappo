@@ -4,6 +4,14 @@ GLAPPO (**G**eneric **L**inear **A**lgebra **P**orting of **P**yDMD [**O**ngoing
 twin repository of PyDMD/PyDMD#299, which enables support for generic linear
 algebra frameworks in PyDMD.
 
+Table of contents:
+- [PyDMD](#pydmd)
+- [What is *GLAPPO*](#what-is-glappo)
+- [Progress](#progress)
+- [Developers guide](#developers-guide)
+- [Results -- DLDMD](#results----dldmd)
+- [References](#references)
+
 ## PyDMD
 
 PyDMD is the widest open source framework for
@@ -12,7 +20,7 @@ Along with the implementation of 14 DMD variants, PyDMD provides tools for DMD a
 eigenvalues and mode manipulation/analysis), and development tools to extend the
 framework with custom code, e.g. new DMD variants or tailored post-processing.
 
-## Project
+## What is *GLAPPO*
 
 The aim of **GLAPPO** is to make PyDMD agnostic on the linear algebra framework.
 
@@ -61,7 +69,7 @@ The benefit of tensorized training are:
 - The DMD instance retains information on all the slices of `X`;
 - Coinciseness.
 
-### Progress
+## Progress
 
 - **Implementation**
   - [x] Generic PyDMD linear algebra formulation (i.e. `linalg_base.py`)
@@ -79,7 +87,7 @@ The benefit of tensorized training are:
   - [ ] Documentation for PyDMD users
   - [x] Documentation for PyDMD developers
 
-### Implementation
+### Implementation approach
 
 The implementation step is clearly the most time consuming, as we need to rewrite the PyDMD framework
 in a more general way leveraging linear algebra subroutines supported by all the target frameworks
