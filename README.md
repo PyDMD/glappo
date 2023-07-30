@@ -4,7 +4,8 @@ GLAPPO (**G**eneric **L**inear **A**lgebra **P**orting of **P**yDMD [**O**ngoing
 twin repository of PyDMD/PyDMD#299, which enables support for generic linear
 algebra frameworks in PyDMD.
 
-Table of contents:
+### Table of contents
+
 - [PyDMD](#pydmd)
 - [What is *GLAPPO*](#what-is-glappo)
 - [Progress](#progress)
