@@ -71,47 +71,25 @@ The benefit of tensorized training are:
 - Coinciseness.
 
 ## Progress
-
-- **Implementation**
-  - [x] Generic PyDMD linear algebra formulation (i.e. `linalg_base.py`)
-  - [ ] Concrete implementations of `linalg_base.py`
-    - [x] NumPy
-    - [x] PyTorch
-    - [ ] JAX
-    - [ ] TensorFlow
-  - [x] Batched PyDMD formulation
-  - [ ] Port all DMD variants
-- **Validation**
-  - [x] DLDMD
-  - [ ] Fully working test suite
-- **Distribution**
-  - [ ] Documentation for PyDMD users
-  - [x] Documentation for PyDMD developers
  
-### Ported DMD 
-
-- CDMD
-- DMD
-- DMDc
-- FbDMD
-- HankelDMD
-- HODMD
-- MrDMD
-- RDMD
-- SubspaceDMD
-
-### TODO
-
-- BOPDMD
-- HAVOK
-- OptDMD
-- PIDMD
-- SPDMD
-
-**Other DMD codes to be ported**
-
-- `dmd_modes_tuner.py`
-- ParametricDMD
+| Name            | GLAPPified         | Tensorized         |
+|-----------------|--------------------|--------------------|
+| BOPDMD          | :x:                | :x:                |
+| CDMD            | :heavy_check_mark: | :heavy_check_mark: |
+| dmd_modes_tuner | :x:                | :x:                |
+| DMD             | :heavy_check_mark: | :heavy_check_mark: |
+| DMDc            | :heavy_check_mark: | :x:                |
+| FbDMD           | :heavy_check_mark: | :heavy_check_mark: |
+| HankelDMD       | :heavy_check_mark: | :heavy_check_mark: |
+| HAVOK           | :x:                | :x:                |
+| HODMD           | :heavy_check_mark: | :heavy_check_mark: |
+| MrDMD           | :x:                | :x:                |
+| OptDMD          | :x:                | :x:                |
+| ParametricDMD   | :x:                | :x:                |
+| PIDMD           | :x:                | :x:                |
+| RDMD            | :heavy_check_mark: | :heavy_check_mark: |
+| SPDMD           | :x:                | :x:                |
+| SubspaceDMD     | :heavy_check_mark: | :heavy_check_mark: |
 
 ## Implementation
 
