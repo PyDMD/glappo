@@ -87,8 +87,33 @@ The benefit of tensorized training are:
 - **Distribution**
   - [ ] Documentation for PyDMD users
   - [x] Documentation for PyDMD developers
+ 
+### Ported DMD 
 
-### Implementation approach
+- CDMD
+- DMD
+- DMDc
+- FbDMD
+- HankelDMD
+- HODMD
+- MrDMD
+- RDMD
+- SubspaceDMD
+
+### TODO
+
+- BOPDMD
+- HAVOK
+- OptDMD
+- PIDMD
+- SPDMD
+
+**Other DMD codes to be ported**
+
+- `dmd_modes_tuner.py`
+- ParametricDMD
+
+## Implementation
 
 The implementation step is clearly the most time consuming, as we need to rewrite the PyDMD framework
 in a more general way leveraging linear algebra subroutines supported by all the target frameworks
@@ -129,32 +154,6 @@ training avoiding overcomplicated code with tons of conditional branches (`if X.
 mainly achieved thanks to the `...` operator in PyTorch and to same careful swapping of tensor axes. As
 we're going to see in the benchmark this sub-step is fundamental to fully support Deep Learning on DMD,
 as the performance toll imposed otherwise would have made unfeasible any kind of training.
-
-### Ported DMD variants
-
-- CDMD
-- DMD
-- DMDc
-- FbDMD
-- HankelDMD
-- HODMD
-- MrDMD
-- RDMD
-- SubspaceDMD
-
-### TODO
-
-- BOPDMD
-- HAVOK
-- OptDMD
-- PIDMD
-- SPDMD
-
-**Other DMD codes to be ported**
-
-- `dmd_modes_tuner.py`
-- ParametricDMD
-
 
 ## Developers guide
 
