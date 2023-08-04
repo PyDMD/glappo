@@ -177,6 +177,14 @@ PyDMD.
 Test new and old code for all new possibilities introduced by GLAPPO, for instance tensorized training. There are
 many examples in `tests`.
 
+**Plan for batching**
+
+GLAPPO enables batched DMD, namely applying the same DMD operator to multiple datasets in one highly optimized call.
+In order to support batching, make sure you index shapes starting from the last one, e.g. `shape[-2]` instead of
+`shape[0]` to identify the space dimension, or `shape[-1]` instead of `shape[1]` to identify the time dimension).
+Also, all calls to `.T` should be dropped in favor of `.swapaxes(-1, -2)`. You find tons of examples in classes which
+already support batched training.
+
 ## Results -- DLDMD
 
 We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
