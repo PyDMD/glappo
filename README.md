@@ -76,14 +76,14 @@ The benefit of tensorized training are:
 |-----------------|--------------------|--------------------|
 | BOPDMD          | :x:                | :x:                |
 | CDMD            | :heavy_check_mark: | :heavy_check_mark: |
-| dmd_modes_tuner | :x:                | :x:                |
+| dmd_modes_tuner | :heavy_check_mark: | :x:                |
 | DMD             | :heavy_check_mark: | :heavy_check_mark: |
 | DMDc            | :heavy_check_mark: | :x:                |
 | FbDMD           | :heavy_check_mark: | :heavy_check_mark: |
 | HankelDMD       | :heavy_check_mark: | :heavy_check_mark: |
 | HAVOK           | :x:                | :x:                |
 | HODMD           | :heavy_check_mark: | :heavy_check_mark: |
-| MrDMD           | :x:                | :x:                |
+| MrDMD           | :heavy_check_mark: | :x:                |
 | OptDMD          | :x:                | :x:                |
 | ParametricDMD   | :x:                | :x:                |
 | PIDMD           | :x:                | :x:                |
