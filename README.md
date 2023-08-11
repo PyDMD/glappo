@@ -133,58 +133,6 @@ mainly achieved thanks to the `...` operator in PyTorch and to same careful swap
 we're going to see in the benchmark this sub-step is fundamental to fully support Deep Learning on DMD,
 as the performance toll imposed otherwise would have made unfeasible any kind of training.
 
-## Developers guide
-
-A *brief* guide for PyDMD developers on how to leverage GLAPPO for new and old PyDMD codes.
-
-### Things to keep in mind
-
-Due to the strong requirements of `torch.mul` and `torch.linalg.multi_dot`, the implementation of these
-two functions in `pytorch_linalg.py` forces a cast to the biggest **complex** type found in the argumnets.
-We decided to take this path instead of placing the burden on user/implementors since for some algorithms
-it's hard to control consistently whether the output is complex or real (e.g. `torch.linalg.eig`) and casts
-will happen internally quite often. This damages memory efficiency and performance, but ensures correct 
-results. It will be subject of investigation if we receive complains from our users.
-
-This kind of casts is logged, in order to get the logs enable the `INFO` logging level:
-```python
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
-
-### Guidelines
-
-**Calling `build_linalg_module()`**
-
-Be careful on the argument on which you call `build_linalg_module()`. It may happen that some NumPy arrays
-are created *en passant* to be used as arguments for more complicated functions. These are not good candidates
-for `build_linalg_module()`, as they clearly do not convey information about user preferences on array typing.
-
-**Check aggressively...**
-
-Always check that the user is providing appropriate array pairs/triplets in PyDMD entrypoints (e.g. `fit()`).
-`linalg.py` provides some utility functions (`is_array(X)`, `assert_same_linalg_type(X,*args)`) to facilitate writing
-this kind of checks.
-
-**... but trust the team**
-
-No need to check the output of internal functions like `DMDBase._optimal_dmd_matrices()`. This clutters the
-code and provides no additional value, our PRs are carefully reviewed by developers from the core team of
-PyDMD.
-
-**Test!**
-
-Test new and old code for all new possibilities introduced by GLAPPO, for instance tensorized training. There are
-many examples in `tests`.
-
-**Plan for batching**
-
-GLAPPO enables batched DMD, namely applying the same DMD operator to multiple datasets in one highly optimized call.
-In order to support batching, make sure you index shapes starting from the last one, e.g. `shape[-2]` instead of
-`shape[0]` to identify the space dimension, or `shape[-1]` instead of `shape[1]` to identify the time dimension).
-Also, all calls to `.T` should be dropped in favor of `.swapaxes(-1, -2)`. You find tons of examples in classes which
-already support batched training.
-
 ## Results -- DLDMD
 
 We validated **GLAPPO** against DLDMD, a DMD variant which uses DL techniques to enhance the quality of reconstruction/prediction.
